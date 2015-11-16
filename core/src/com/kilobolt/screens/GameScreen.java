@@ -4,24 +4,37 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.kilobolt.gameworld.GameRenderer;
 import com.kilobolt.gameworld.GameWorld;
+import com.kilobolt.zbHelpers.InputHandler;
 
 public class GameScreen implements Screen {
 
     private GameWorld world;
     private GameRenderer renderer;
-
+    private float runTime = 0;
 
     public GameScreen() {
 
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+        float gameWidth = 136;
+        float gameHeight = screenHeight / (screenWidth / gameWidth);
+
+        int midPointY = (int) (gameHeight/2);
+
         Gdx.app.log("GameScreen", "Attached");
-        world = new GameWorld();
-        renderer = new GameRenderer(world);
+
+        world = new GameWorld(midPointY);
+        renderer = new GameRenderer(world, (int)gameHeight, midPointY);
+
+        Gdx.input.setInputProcessor(new InputHandler(world.getBird()));
+
     }
 
     @Override
     public void render(float delta) {
+        runTime+=delta;
         world.update(delta);
-        renderer.render();
+        renderer.render(runTime);
     }
 
     @Override
