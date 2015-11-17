@@ -5,22 +5,8 @@
         jar="C:\Users\JohnCurton\Documents\ZombieBird\core\build\libs\core-1.0.jar"
         jumboMode="false"
         revision="23.0.2"
-        sha1="7ecabd582f07ce5a2fd26ffff4e77b1bb9e2de63">
+        sha1="dc93f7da62c2ad56f1b7b5bb6084b6f615000455">
         <dex dex="C:\Users\JohnCurton\Documents\ZombieBird\android\build\intermediates\pre-dexed\debug\core-1.0-4bc8d5477d02677e33159085c799d1bb670b8f71.jar" />
-    </item>
-    <item
-        jar="C:\Users\JohnCurton\.gradle\caches\modules-2\files-2.1\com.badlogicgames.gdx\gdx\1.7.1\2179cc613447c297623a4a6d2ba6692c3aaff804\gdx-1.7.1.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="2179cc613447c297623a4a6d2ba6692c3aaff804">
-        <dex dex="C:\Users\JohnCurton\Documents\ZombieBird\android\build\intermediates\pre-dexed\debug\gdx-1.7.1-43df5975c73e9ffd421aee69001ccfce12968fa4.jar" />
-    </item>
-    <item
-        jar="C:\Users\JohnCurton\.gradle\caches\modules-2\files-2.1\com.badlogicgames.gdx\gdx-backend-android\1.7.1\454871d4783564f17959bf9247660e7f56ecc4ab\gdx-backend-android-1.7.1.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="454871d4783564f17959bf9247660e7f56ecc4ab">
-        <dex dex="C:\Users\JohnCurton\Documents\ZombieBird\android\build\intermediates\pre-dexed\debug\gdx-backend-android-1.7.1-77380a296598a7e736b1422ed582c4fea05ef7c5.jar" />
     </item>
 
 </items>
