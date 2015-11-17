@@ -15,13 +15,15 @@ public class AssetLoader {
     public static TextureRegion bird, birdDown, birdUp,
             skullUp, skullDown, bar, bg, grass;
 
-    public static Sound dead;
+    public static Sound dead, flap, coin;
 
 
 
     public static void load(){
 
         dead = Gdx.audio.newSound(Gdx.files.internal("data/dead.wav"));
+        flap = Gdx.audio.newSound(Gdx.files.internal("data/flap.wav"));
+        coin = Gdx.audio.newSound(Gdx.files.internal("data/coin.wav"));
 
         texture = new Texture(Gdx.files.internal("data/texture.png"));
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);

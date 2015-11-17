@@ -2,6 +2,7 @@ package com.kilobolt.gameobjects;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.kilobolt.zbHelpers.AssetLoader;
 
 public class Bird {
 
@@ -68,6 +69,7 @@ public class Bird {
 
     public void onClick() {
         velocity.y = -140;
+        AssetLoader.flap.play();
     }
 
     public float getX() {
