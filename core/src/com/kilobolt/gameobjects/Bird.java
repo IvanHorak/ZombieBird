@@ -6,6 +6,8 @@ import com.kilobolt.zbHelpers.AssetLoader;
 
 public class Bird {
 
+    private boolean isAlive;
+
     private Vector2 position;
     private Vector2 velocity;
     private Vector2 acceleration;
@@ -17,6 +19,7 @@ public class Bird {
     private Circle boundingCircle;
 
     public Bird(float x, float y, int width, int height) {
+        isAlive=true;
         this.width = width;
         this.height = height;
         position = new Vector2(x, y);
@@ -49,7 +52,7 @@ public class Bird {
         }
 
         // Rotate clockwise
-        if (isFalling()) {
+        if (isFalling() || !isAlive) {
             rotation += 480 * delta;
             if (rotation > 90) {
                 rotation = 90;
@@ -64,12 +67,25 @@ public class Bird {
     }
 
     public boolean shouldntFlap() {
-        return velocity.y > 70;
+
+        return velocity.y > 70 || !isAlive;
     }
 
     public void onClick() {
+        if(isAlive){
         velocity.y = -140;
         AssetLoader.flap.play();
+
+        }
+    }
+
+    public void die(){
+        isAlive=false;
+        velocity.y=0;
+    }
+
+    public void decelerate(){
+        acceleration.y=0;
     }
 
     public float getX() {
@@ -96,5 +112,8 @@ public class Bird {
         return boundingCircle;
     }
 
+    public boolean isAlive() {
+        return isAlive;
+    }
 }
 

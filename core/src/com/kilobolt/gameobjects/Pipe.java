@@ -7,6 +7,8 @@ import java.util.Random;
 
 public class Pipe extends Scrollable {
 
+    private boolean isScored = false;
+
     private Random r;
 
     private Rectangle skullUp, skullDown, barUp, barDown;
@@ -62,6 +64,7 @@ public class Pipe extends Scrollable {
         super.reset(newX);
         // Change the height to a random number
         height = r.nextInt(90) + 15;
+        isScored = false;
     }
 
     public Rectangle getSkullUp() {
@@ -89,5 +92,13 @@ public class Pipe extends Scrollable {
                     .overlaps(bird.getBoundingCircle(), skullDown));
         }
         return false;
+    }
+
+    public boolean isScored() {
+        return isScored;
+    }
+
+    public void setScored(boolean b){
+        isScored = b;
     }
 }
