@@ -6,6 +6,8 @@ import com.kilobolt.zbHelpers.AssetLoader;
 
 public class Bird {
 
+    private float originalY;
+
     private boolean isAlive;
 
     private Vector2 position;
@@ -22,11 +24,14 @@ public class Bird {
         isAlive=true;
         this.width = width;
         this.height = height;
+        this.originalY = y;
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
         acceleration = new Vector2(0, 460);
         boundingCircle = new Circle();
     }
+
+
 
     public void update(float delta) {
 
@@ -34,6 +39,11 @@ public class Bird {
 
         if (velocity.y > 200) {
             velocity.y = 200;
+        }
+
+        if (position.y < -13){
+            position.y = -13;
+            velocity.y = 0;
         }
 
         position.add(velocity.cpy().scl(delta));
@@ -58,9 +68,14 @@ public class Bird {
                 rotation = 90;
             }
 
+
         }
 
     }
+
+
+
+
 
     public boolean isFalling() {
         return velocity.y > 110;
@@ -73,8 +88,8 @@ public class Bird {
 
     public void onClick() {
         if(isAlive){
-        velocity.y = -140;
-        AssetLoader.flap.play();
+            velocity.y = -140;
+            AssetLoader.flap.play();
 
         }
     }
@@ -115,5 +130,23 @@ public class Bird {
     public boolean isAlive() {
         return isAlive;
     }
+
+    public void onRestart(int y){
+        rotation = 0;
+        position.y = y;
+        velocity.x = 0;
+        velocity.y = 0;
+        acceleration.x = 0;
+        acceleration.y = 460;
+        isAlive = true;
+    }
+
+    public void updateReady(float runTime) {
+        position.y = 2 * (float) Math.sin(7 * runTime) + originalY;
+    }
+
+
 }
+
+
 

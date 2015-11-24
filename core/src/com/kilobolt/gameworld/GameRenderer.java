@@ -7,11 +7,21 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.kilobolt.TweenAccessors.Value;
+import com.kilobolt.TweenAccessors.ValueAccessor;
 import com.kilobolt.gameobjects.Bird;
 import com.kilobolt.gameobjects.Grass;
 import com.kilobolt.gameobjects.Pipe;
 import com.kilobolt.gameobjects.ScrollHandler;
+import com.kilobolt.ui.SimpleButton;
 import com.kilobolt.zbHelpers.AssetLoader;
+import com.kilobolt.zbHelpers.InputHandler;
+
+import java.util.List;
+
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenEquations;
+import aurelienribon.tweenengine.TweenManager;
 
 public class GameRenderer {
 
@@ -22,29 +32,50 @@ public class GameRenderer {
     private SpriteBatch batcher;
 
     private int midPointY;
-    private int gameHeight;
 
+    // Game Objects
     private Bird bird;
     private ScrollHandler scroller;
     private Grass frontGrass, backGrass;
     private Pipe pipe1, pipe2, pipe3;
 
-    private TextureRegion bg, grass;
+    // Game Assets
+    private TextureRegion bg, grass, birdMid, skullUp, skullDown, bar;
     private Animation birdAnimation;
-    private TextureRegion birdMid, birdDown, birdUp;
-    private TextureRegion skullUp, skullDown, bar;
 
+    // Tween stuff
+    private TweenManager manager;
+    private Value alpha = new Value();
 
-    private void initAssets(){
-        bg = AssetLoader.bg;
-        grass = AssetLoader.grass;
-        birdAnimation = AssetLoader.birdAnimation;
-        birdMid = AssetLoader.bird;
-        birdDown = AssetLoader.birdDown;
-        birdUp = AssetLoader.birdUp;
-        skullUp = AssetLoader.skullUp;
-        skullDown = AssetLoader.skullDown;
-        bar = AssetLoader.bar;
+    // Buttons
+    private List<SimpleButton> menuButtons;
+
+    public GameRenderer(GameWorld world, int gameHeight, int midPointY) {
+        myWorld = world;
+
+        this.midPointY = midPointY;
+        this.menuButtons = ((InputHandler) Gdx.input.getInputProcessor())
+                .getMenuButtons();
+
+        cam = new OrthographicCamera();
+        cam.setToOrtho(true, 136, gameHeight);
+
+        batcher = new SpriteBatch();
+        batcher.setProjectionMatrix(cam.combined);
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setProjectionMatrix(cam.combined);
+
+        initGameObjects();
+        initAssets();
+        setupTweens();
+
+    }
+
+    private void setupTweens() {
+        Tween.registerAccessor(Value.class, new ValueAccessor());
+        manager = new TweenManager();
+        Tween.to(alpha, -1, .5f).target(0).ease(TweenEquations.easeOutQuad)
+                .start(manager);
     }
 
     private void initGameObjects() {
@@ -57,25 +88,14 @@ public class GameRenderer {
         pipe3 = scroller.getPipe3();
     }
 
-    public GameRenderer(GameWorld world, int gameHeight, int midPointY) {
-        myWorld = world;
-        this.gameHeight = gameHeight;
-        this.midPointY = midPointY;
-
-        cam = new OrthographicCamera();
-        cam.setToOrtho(true,137,204);
-
-        batcher = new SpriteBatch();
-        // Attach batcher to camera
-        batcher.setProjectionMatrix(cam.combined);
-
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setProjectionMatrix(cam.combined);
-
-// Call helper methods to initialize instance variables
-        initGameObjects();
-        initAssets();
-
+    private void initAssets() {
+        bg = AssetLoader.bg;
+        grass = AssetLoader.grass;
+        birdAnimation = AssetLoader.birdAnimation;
+        birdMid = AssetLoader.bird;
+        skullUp = AssetLoader.skullUp;
+        skullDown = AssetLoader.skullDown;
+        bar = AssetLoader.bar;
     }
 
     private void drawGrass() {
@@ -87,8 +107,6 @@ public class GameRenderer {
     }
 
     private void drawSkulls() {
-        // Temporary code! Sorry about the mess :)
-        // We will fix this when we finish the Pipe class.
 
         batcher.draw(skullUp, pipe1.getX() - 1,
                 pipe1.getY() + pipe1.getHeight() - 14, 24, 14);
@@ -107,8 +125,6 @@ public class GameRenderer {
     }
 
     private void drawPipes() {
-        // Temporary code! Sorry about the mess :)
-        // We will fix this when we finish the Pipe class.
         batcher.draw(bar, pipe1.getX(), pipe1.getY(), pipe1.getWidth(),
                 pipe1.getHeight());
         batcher.draw(bar, pipe1.getX(), pipe1.getY() + pipe1.getHeight() + 45,
@@ -125,14 +141,52 @@ public class GameRenderer {
                 pipe3.getWidth(), midPointY + 66 - (pipe3.getHeight() + 45));
     }
 
+    private void drawBirdCentered(float runTime) {
+        batcher.draw(birdAnimation.getKeyFrame(runTime), 59, bird.getY() - 15,
+                bird.getWidth() / 2.0f, bird.getHeight() / 2.0f,
+                bird.getWidth(), bird.getHeight(), 1, 1, bird.getRotation());
+    }
 
-    public void render(float runTime) {
+    private void drawBird(float runTime) {
 
-        // Fill the entire screen with black, to prevent potential flickering.
+        if (bird.shouldntFlap()) {
+            batcher.draw(birdMid, bird.getX(), bird.getY(),
+                    bird.getWidth() / 2.0f, bird.getHeight() / 2.0f,
+                    bird.getWidth(), bird.getHeight(), 1, 1, bird.getRotation());
+
+        } else {
+            batcher.draw(birdAnimation.getKeyFrame(runTime), bird.getX(),
+                    bird.getY(), bird.getWidth() / 2.0f,
+                    bird.getHeight() / 2.0f, bird.getWidth(), bird.getHeight(),
+                    1, 1, bird.getRotation());
+        }
+
+    }
+
+    private void drawMenuUI() {
+        batcher.draw(AssetLoader.zbLogo, 136 / 2 - 56, midPointY - 50,
+                AssetLoader.zbLogo.getRegionWidth() / 1.2f,
+                AssetLoader.zbLogo.getRegionHeight() / 1.2f);
+
+        for (SimpleButton button : menuButtons) {
+            button.draw(batcher);
+        }
+
+    }
+
+    private void drawScore() {
+        int length = ("" + myWorld.getScore()).length();
+        AssetLoader.shadow.draw(batcher, "" + myWorld.getScore(),
+                68 - (3 * length), midPointY - 82);
+        AssetLoader.font.draw(batcher, "" + myWorld.getScore(),
+                68 - (3 * length), midPointY - 83);
+    }
+
+    public void render(float delta, float runTime) {
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Begin ShapeRenderer
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Draw Background color
@@ -147,50 +201,53 @@ public class GameRenderer {
         shapeRenderer.setColor(147 / 255.0f, 80 / 255.0f, 27 / 255.0f, 1);
         shapeRenderer.rect(0, midPointY + 77, 136, 52);
 
-        // End ShapeRenderer
         shapeRenderer.end();
 
-        // Begin SpriteBatch
         batcher.begin();
         batcher.disableBlending();
+
         batcher.draw(bg, 0, midPointY + 23, 136, 43);
 
-        // The bird needs transparency, so we enable that again.
-
-
-        // 1. Draw Grass
         drawGrass();
-
-        // 2. Draw Pipes
         drawPipes();
-        batcher.enableBlending();
 
-        // 3. Draw Skulls (requires transparency)
+        batcher.enableBlending();
         drawSkulls();
 
-
-        if (bird.shouldntFlap()) {
-            batcher.draw(birdMid, bird.getX(), bird.getY(),
-                    bird.getWidth() / 2.0f, bird.getHeight() / 2.0f,
-                    bird.getWidth(), bird.getHeight(), 1, 1, bird.getRotation());
-
-        } else {
-            batcher.draw(birdAnimation.getKeyFrame(runTime), bird.getX(),
-                    bird.getY(), bird.getWidth() / 2.0f,
-                    bird.getHeight() / 2.0f, bird.getWidth(), bird.getHeight(),
-                    1, 1, bird.getRotation());
+        if (myWorld.isRunning()) {
+            drawBird(runTime);
+            drawScore();
+        } else if (myWorld.isReady()) {
+            drawBird(runTime);
+            drawScore();
+        } else if (myWorld.isMenu()) {
+            drawBirdCentered(runTime);
+            drawMenuUI();
+        } else if (myWorld.isGameOver()) {
+            drawBird(runTime);
+            drawScore();
+        } else if (myWorld.isHighScore()) {
+            drawBird(runTime);
+            drawScore();
         }
 
-        String score = myWorld.getScore() + "";
-
-        // Draw shadow first
-        AssetLoader.shadow.draw(batcher, "" + myWorld.getScore(), (136 / 2)
-                - (3 * score.length()), 12);
-        // Draw text
-        AssetLoader.font.draw(batcher, "" + myWorld.getScore(), (136 / 2)
-                - (3 * score.length() - 1), 11);
-
         batcher.end();
+        drawTransition(delta);
 
     }
+
+    private void drawTransition(float delta) {
+        if (alpha.getValue() > 0) {
+            manager.update(delta);
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(1, 1, 1, alpha.getValue());
+            shapeRenderer.rect(0, 0, 136, 300);
+            shapeRenderer.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        }
+    }
+
 }
