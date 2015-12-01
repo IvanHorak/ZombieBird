@@ -33,7 +33,7 @@ public class SplashScreen implements Screen {
 
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-        float desiredWidth = width * .7f;
+        float desiredWidth = width * 1f;
         float scale = desiredWidth / sprite.getWidth();
 
         sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);

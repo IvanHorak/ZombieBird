@@ -37,10 +37,12 @@ public class Bird {
 
         velocity.add(acceleration.cpy().scl(delta));
 
+//      maksimalna brzina po y osi neka bude 200
         if (velocity.y > 200) {
             velocity.y = 200;
         }
 
+//      ovaj IF sprječava da ptica leti izvan ekrana
         if (position.y < -13){
             position.y = -13;
             velocity.y = 0;
@@ -48,20 +50,21 @@ public class Bird {
 
         position.add(velocity.cpy().scl(delta));
 
-        // Set the circle's center to be (9, 6) with respect to the bird.
-        // Set the circle's radius to be 6.5f;
+//      Postavi centar kruga (9, 6) u odnosu na lika.
+//      Postavi radijus kruga na 6.5f;
         boundingCircle.set(position.x + 9, position.y + 6, 6.5f);
 
-        // Rotate counterclockwise
+//      ukoliko lik JE u usponu, rotiraj lika suprotno od kazaljke na satu
         if (velocity.y < 0) {
             rotation -= 600 * delta;
-
+//        sprječavanje daljnje rotacije lika iznad dozvoljene granice
             if (rotation < -20) {
                 rotation = -20;
             }
         }
 
-        // Rotate clockwise
+     /*ako JE u slobodnom padu ili lik NIJE živ,
+     rotiraj za 90 stupnjeva prema dolje i stani   */
         if (isFalling() || !isAlive) {
             rotation += 480 * delta;
             if (rotation > 90) {

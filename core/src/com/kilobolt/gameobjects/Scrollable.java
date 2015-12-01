@@ -1,6 +1,9 @@
 package com.kilobolt.gameobjects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.kilobolt.gameworld.GameWorld;
+import com.kilobolt.zbHelpers.AssetLoader;
 
 public class Scrollable {
 
@@ -10,6 +13,7 @@ public class Scrollable {
     protected int width;
     protected int height;
     protected boolean isScrolledLeft;
+    private GameWorld gameWorld;
 
     public Scrollable(float x, float y, int width, int height, float scrollSpeed) {
         position = new Vector2(x, y);
@@ -21,8 +25,11 @@ public class Scrollable {
 
     public void update(float delta) {
         position.add(velocity.cpy().scl(delta));
-
         // If the Scrollable object is no longer visible:
+
+
+
+
         if (position.x + width < 0) {
             isScrolledLeft = true;
         }
@@ -58,6 +65,7 @@ public class Scrollable {
     public int getHeight() {
         return height;
     }
+
 
 
     public void stop() {

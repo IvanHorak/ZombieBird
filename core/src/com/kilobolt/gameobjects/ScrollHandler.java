@@ -1,7 +1,10 @@
 package com.kilobolt.gameobjects;
 
+import com.badlogic.gdx.Gdx;
 import com.kilobolt.gameworld.GameWorld;
 import com.kilobolt.zbHelpers.AssetLoader;
+
+import sun.rmi.runtime.Log;
 
 public class ScrollHandler {
 
@@ -9,14 +12,16 @@ public class ScrollHandler {
     private GameWorld gameWorld;
     private Grass frontGrass, backGrass;
     private Pipe pipe1, pipe2, pipe3;
+    int nextSpeed=1,level;
 
     // ScrollHandler will use the constants below to determine
     // how fast we need to scroll and also determine
     // the size of the gap between each pair of pipes.
 
     // Capital letters are used by convention when naming constants.
-    public static final int SCROLL_SPEED = -59;
+    public static final int SCROLL_SPEED = -49;
     public static final int PIPE_GAP = 49;
+    public static final int UP_SPEED = -1;
 
     // Constructor receives a float that tells us where we need to create our
     // Grass and Pipe objects.
@@ -47,12 +52,26 @@ public class ScrollHandler {
     }
 
     public void update(float delta) {
+
         frontGrass.update(delta);
         backGrass.update(delta);
         pipe1.update(delta);
         pipe2.update(delta);
         pipe3.update(delta);
+        level = gameWorld.getScore() / 6;
+        if(level==nextSpeed){
+            nextSpeed++;
+            pipe1.velocity.x += UP_SPEED;
+            pipe2.velocity.x += UP_SPEED;
+            pipe3.velocity.x += UP_SPEED;
+            backGrass.velocity.x += UP_SPEED;
+            frontGrass.velocity.x += UP_SPEED;
+        }
 
+        /*if(==0) {
+            pipe1.velocity.x -= 1;
+
+        }*/
         // Check if any of the pipes are scrolled left,
         // and reset accordingly
         if (pipe1.isScrolledLeft()) {
@@ -96,6 +115,8 @@ public class ScrollHandler {
 
     //  Return true if ANY pipe hits the bird
     public boolean collides(Bird bird) {
+
+//        sustav provjere bodovanja
         if(!pipe1.isScored() && pipe1.getX() + (pipe1.getWidth() / 2) < bird.getX()){
             addScore(1);
             pipe1.setScored(true);
@@ -110,15 +131,16 @@ public class ScrollHandler {
             AssetLoader.coin.play();
         }
 
+//        provjera kolizije sa preprekama (cijevi)
         return (pipe1.collides(bird) || pipe2.collides(bird) || pipe3.collides(bird));
     }
 
     public void onRestart(){
         frontGrass.onRestart(0, SCROLL_SPEED);
         backGrass.onRestart(frontGrass.getTailX(), SCROLL_SPEED);
-        pipe1.onRestart(210, SCROLL_SPEED);
-        pipe2.onRestart(pipe1.getTailX() + PIPE_GAP, SCROLL_SPEED);
-        pipe3.onRestart(pipe2.getTailX() + PIPE_GAP, SCROLL_SPEED);
+        pipe1.onRestart(210,SCROLL_SPEED);
+        pipe2.onRestart(pipe1.getTailX() + PIPE_GAP,SCROLL_SPEED);
+        pipe3.onRestart(pipe2.getTailX() + PIPE_GAP,SCROLL_SPEED);
     }
 
     public void stop() {

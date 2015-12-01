@@ -60,9 +60,8 @@ public class Pipe extends Scrollable {
 
     @Override
     public void reset(float newX) {
-        // Call the reset method in the superclass (Scrollable)
         super.reset(newX);
-        // Change the height to a random number
+        // Postavljanje visine od 16
         height = r.nextInt(90) + 15;
         isScored = false;
     }
@@ -102,8 +101,8 @@ public class Pipe extends Scrollable {
         isScored = b;
     }
 
-    public void onRestart(float x, float scrollSpeed) {
-        velocity.x = scrollSpeed;
+    public void onRestart(float x,int SCROLL_SPEED) {
+        velocity.x=SCROLL_SPEED;
         reset(x);
     }
 }

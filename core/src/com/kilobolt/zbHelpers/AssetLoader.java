@@ -12,16 +12,17 @@ public class AssetLoader {
 
     public static Preferences prefs;
 
-    public static BitmapFont font, shadow;
+    public static BitmapFont font, shadow, whiteFont;
 
     public static Texture texture, logoTexture;
 
     public static Animation birdAnimation;
 
     public static TextureRegion bird, birdDown, birdUp,
-            skullUp, skullDown, bar, bg, grass, playButtonUp, playButtonDown, logo, zbLogo;
+            skullUp, skullDown, bar, bg, grass, playButtonUp, playButtonDown,
+            logo, zbLogo, ready, gameOver, highScore, scoreboard, star, noStar, retry;
 
-    public static Sound dead, flap, coin;
+    public static Sound dead, flap, coin, fall;
 
 
 
@@ -40,19 +41,41 @@ public class AssetLoader {
         texture = new Texture(Gdx.files.internal("data/texture.png"));
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-
-
         zbLogo = new TextureRegion(texture, 0, 55, 135, 24);
         zbLogo.flip(false, true);
 
         font = new BitmapFont(Gdx.files.internal("data/text.fnt"));
         font.getData().setScale(.25f, -.25f);
+        whiteFont = new BitmapFont(Gdx.files.internal("data/whitetext.fnt"));
+        whiteFont.getData().setScale(.1f, -.1f);
         shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
         shadow.getData().setScale(.25f, -.25f);
 
         dead = Gdx.audio.newSound(Gdx.files.internal("data/dead.wav"));
         flap = Gdx.audio.newSound(Gdx.files.internal("data/flap.wav"));
         coin = Gdx.audio.newSound(Gdx.files.internal("data/coin.wav"));
+        fall = Gdx.audio.newSound(Gdx.files.internal("data/fall.wav"));
+
+        ready = new TextureRegion(texture, 59, 83, 34, 7);
+        ready.flip(false, true);
+
+        retry = new TextureRegion(texture, 59, 110, 33, 7);
+        retry.flip(false, true);
+
+        gameOver = new TextureRegion(texture, 59, 92, 46, 7);
+        gameOver.flip(false, true);
+
+        scoreboard = new TextureRegion(texture, 111, 83, 97, 37);
+        scoreboard.flip(false, true);
+
+        star = new TextureRegion(texture, 152, 70, 10, 10);
+        noStar = new TextureRegion(texture, 165, 70, 10, 10);
+
+        star.flip(false, true);
+        noStar.flip(false, true);
+
+        highScore = new TextureRegion(texture, 59, 101, 48, 7);
+        highScore.flip(false, true);
 
         playButtonUp = new TextureRegion(texture, 0, 83, 29, 16);
         playButtonDown = new TextureRegion(texture, 29, 83, 29, 16);
@@ -94,20 +117,26 @@ public class AssetLoader {
     }
 
     public static int getHighScore() {
+
         return prefs.getInteger("highScore");
     }
 
 
 
     public static void dispose() {
-        // We must dispose of the texture when we are finished.
+    // čišćenje iz memorije:
+//            textura:
         texture.dispose();
 
+//           zvukova:
         dead.dispose();
         flap.dispose();
         coin.dispose();
+        fall.dispose();
 
+//          fontova:
         font.dispose();
+        whiteFont.dispose();
         shadow.dispose();
     }
 }
